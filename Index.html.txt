@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Rafael Harmuch | Psicologia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="flex h-screen">
+        <aside class="w-64 bg-slate-800 text-white flex flex-col">
+            <div class="p-6 text-center border-b border-slate-700">
+                <h1 class="text-xl font-bold">Rafael Harmuch</h1>
+                <p class="text-xs text-slate-400 uppercase tracking-widest mt-1">Psicólogo Clínico</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="showTab('dashboard')" class="w-full flex items-center p-3 hover:bg-slate-700 rounded-lg transition">
+                    <i class="fas fa-chart-line mr-3"></i> Dashboard
+                </button>
+                <button onclick="showTab('agenda')" class="w-full flex items-center p-3 hover:bg-slate-700 rounded-lg transition">
+                    <i class="fas fa-calendar-alt mr-3"></i> Agenda
+                </button>
+                <button onclick="showTab('pacientes')" class="w-full flex items-center p-3 hover:bg-slate-700 rounded-lg transition">
+                    <i class="fas fa-user-friends mr-3"></i> Pacientes
+                </button>
+            </nav>
+            <div class="p-4 border-t border-slate-700 text-xs text-slate-500 text-center">
+                CRM v1.0 | Rafael Salin Casarim Harmuch
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            
+            <section id="dashboard" class="tab-content active">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Bem-vindo, Rafael</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-slate-500 text-sm">Pacientes Ativos</p>
+                        <h3 id="count-pacientes" class="text-3xl font-bold text-blue-600">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-slate-500 text-sm">Consultas Hoje</p>
+                        <h3 id="count-hoje" class="text-3xl font-bold text-emerald-600">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <p class="text-slate-500 text-sm">Pendentes</p>
+                        <h3 class="text-3xl font-bold text-amber-500">2</h3>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agenda" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Agendamentos</h2>
+                    <button onclick="toggleModal('modal-agenda')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        + Novo Horário
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-4 font-semibold text-slate-600">Paciente</th>
+                                <th class="p-4 font-semibold text-slate-600">Data</th>
+                                <th class="p-4 font-semibold text-slate-600">Hora</th>
+                                <th class="p-4 font-semibold text-slate-600">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-agenda">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="pacientes" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Meus Pacientes</h2>
+                    <button onclick="toggleModal('modal-paciente')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">
+                        + Cadastrar Paciente
+                    </button>
+                </div>
+                <div id="grid-pacientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="modal-paciente" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-bold mb-4">Novo Cadastro</h3>
+            <div class="space-y-4">
+                <input type="text" id="p-nome" placeholder="Nome Completo" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+                <input type="text" id="p-queixa" placeholder="Queixa Principal / Motivo" class="w-full p-2 border rounded-lg">
+                <div class="flex gap-2">
+                    <button onclick="salvarPaciente()" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg">Salvar</button>
+                    <button onclick="toggleModal('modal-paciente')" class="flex-1 bg-slate-200 py-2 rounded-lg">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-agenda" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-bold mb-4">Agendar Sessão</h3>
+            <div class="space-y-4">
+                <select id="a-paciente" class="w-full p-2 border rounded-lg"></select>
+                <input type="date" id="a-data" class="w-full p-2 border rounded-lg">
+                <input type="time" id="a-hora" class="w-full p-2 border rounded-lg">
+                <div class="flex gap-2">
+                    <button onclick="agendarSessao()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Confirmar</button>
+                    <button onclick="toggleModal('modal-agenda')" class="flex-1 bg-slate-200 py-2 rounded-lg">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banco de dados local simples
+        let pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
+        let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            renderizar();
+        }
+
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.toggle('hidden');
+            
+            // Popular select de pacientes no agendamento
+            if(id === 'modal-agenda') {
+                const select = document.getElementById('a-paciente');
+                select.innerHTML = pacientes.map(p => `<option value="${p.nome}">${p.nome}</option>`).join('');
+            }
+        }
+
+        function salvarPaciente() {
+            const nome = document.getElementById('p-nome').value;
+            const queixa = document.getElementById('p-queixa').value;
+            if(!nome) return alert("Nome é obrigatório");
+
+            pacientes.push({ id: Date.now(), nome, queixa });
+            localStorage.setItem('pacientes', JSON.stringify(pacientes));
+            toggleModal('modal-paciente');
+            renderizar();
+        }
+
+        function agendarSessao() {
+            const paciente = document.getElementById('a-paciente').value;
+            const data = document.getElementById('a-data').value;
+            const hora = document.getElementById('a-hora').value;
+
+            if(!data || !hora) return alert("Preencha data e hora");
+
+            agenda.push({ id: Date.now(), paciente, data, hora, status: 'Confirmado' });
+            localStorage.setItem('agenda', JSON.stringify(agenda));
+            toggleModal('modal-agenda');
+            renderizar();
+        }
+
+        function renderizar() {
+            // Stats
+            document.getElementById('count-pacientes').innerText = pacientes.length;
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('count-hoje').innerText = agenda.filter(a => a.data === hoje).length;
+
+            // Lista Pacientes
+            const grid = document.getElementById('grid-pacientes');
+            grid.innerHTML = pacientes.map(p => `
+                <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative group">
+                    <h4 class="font-bold text-slate-800">${p.nome}</h4>
+                    <p class="text-sm text-slate-500 mt-2 italic">"${p.queixa}"</p>
+                    <div class="mt-4 flex gap-2">
+                         <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded-full uppercase font-semibold">Paciente Ativo</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Tabela Agenda
+            const tabela = document.getElementById('lista-agenda');
+            tabela.innerHTML = agenda.sort((a,b) => a.data.localeCompare(b.data)).map(a => `
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-4 font-medium">${a.paciente}</td>
+                    <td class="p-4">${a.data.split('-').reverse().join('/')}</td>
+                    <td class="p-4">${a.hora}</td>
+                    <td class="p-4"><span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-bold">${a.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Inicializar
+        renderizar();
+    </script>
+</body>
+</html>
