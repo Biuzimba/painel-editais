@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Editais · NIPS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: #272c3d;
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --success: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid #ef444433;
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .btn-danger:hover { background: #ef444415; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-icon { padding: 8px; border-radius: var(--radius-sm); }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: var(--font-head);
+    font-size: 26px;
+    font-weight: 700;
+  }
+  .stat-card.accent .stat-value { color: var(--accent); }
+  .stat-card.warn .stat-value { color: var(--warn); }
+  .stat-card.success .stat-value { color: var(--success); }
+  .stat-card.danger .stat-value { color: var(--danger); }
+
+  /* TOOLBAR */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px 8px 36px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    min-width: 140px;
+  }
+  .filter-select:focus { border-color: var(--accent); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+  thead { background: var(--surface2); }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color .15s;
+  }
+  th:hover { color: var(--text); }
+  th .sort-icon { margin-left: 4px; opacity: 0.4; }
+  th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+  td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background .1s; }
+  tbody tr:hover { background: var(--surface2); }
+  td.nome-cell {
+    font-weight: 500;
+    color: var(--text);
+    max-width: 240px;
+  }
+  .nome-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 13px;
+  }
+  .nome-link:hover { text-decoration: underline; }
+  .nome-orgao {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .badge-blue { background: #3b82f620; color: #60a5fa; }
+  .badge-green { background: #10b98120; color: #34d399; }
+  .badge-yellow { background: #f59e0b20; color: #fbbf24; }
+  .badge-red { background: #ef444420; color: #f87171; }
+  .badge-purple { background: #8b5cf620; color: #a78bfa; }
+  .badge-gray { background: #64748b20; color: #94a3b8; }
+
+  .prazo-urgente { color: var(--danger); font-weight: 600; }
+  .prazo-ok { color: var(--success); }
+  .prazo-medio { color: var(--warn); }
+  .prazo-expirado { color: var(--text-muted); text-decoration: line-through; }
+
+  .obs-cell {
+    max-width: 200px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--text-muted);
+  }
+  .empty-state svg { opacity: 0.3; margin-bottom: 16px; }
+  .empty-state p { font-size: 15px; margin-bottom: 8px; color: var(--text-dim); }
+  .empty-state small { font-size: 12px; }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MODAL */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: #00000099;
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 680px;
+    padding: 32px;
+    transform: translateY(16px);
+    transition: transform .2s;
+    position: relative;
+  }
+  .overlay.open .modal { transform: translateY(0); }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .modal-title {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    line-height: 0;
+    transition: color .15s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  /* FORM */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  input, select, textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  select option { background: var(--surface2); }
+
+  .form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* DETAIL MODAL */
+  .detail-section { margin-bottom: 20px; }
+  .detail-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .detail-item { display: flex; flex-direction: column; gap: 3px; }
+  .detail-key { font-size: 11px; color: var(--text-muted); }
+  .detail-val { font-size: 13px; color: var(--text); font-weight: 500; }
+  .detail-obs {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-left: 3px solid var(--accent2);
+  }
+
+  /* CONFIG */
+  .config-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .config-title {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .config-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .alert {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+  .alert-warn { background: #f59e0b15; border: 1px solid #f59e0b30; color: #fbbf24; }
+  .alert-success { background: #10b98115; border: 1px solid #10b98130; color: #34d399; }
+  .alert-info { background: #3b82f615; border: 1px solid #3b82f630; color: #60a5fa; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .header { padding: 0 16px; }
+    .main { padding: 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .config-grid { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ============================================================
+//  ⚙️  CONFIGURAÇÃO FIREBASE — substitua com suas credenciais
+// ============================================================
+const FIREBASE_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+// ============================================================
+
+const CONFIG_KEY = "painel_editais_firebase_config";
+
+function getConfig() {
+  const stored = localStorage.getItem(CONFIG_KEY);
+  if (stored) {
+    try { return JSON.parse(stored); } catch(e) {}
+  }
+  return FIREBASE_CONFIG;
+}
+
+let app, db, unsubscribe;
+let editais = [];
+let editando = null;
+let sortField = "dataLimite";
+let sortAsc = true;
+let filterStatus = "todos";
+let searchTerm = "";
+
+// ===================== INIT =====================
+function initFirebase(config) {
+  try {
+    if (app) { if (unsubscribe) unsubscribe(); }
+    app = initializeApp(config, config.projectId || "painel-editais");
+    db = getFirestore(app);
+    setupListener();
+    return true;
+  } catch(e) {
+    console.error(e);
+    return false;
+  }
+}
+
+function setupListener() {
+  if (!db) return;
+  const ref = collection(db, "editais");
+  if (unsubscribe) unsubscribe();
+  unsubscribe = onSnapshot(ref, (snap) => {
+    editais = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTable();
+    renderStats();
+  }, (err) => {
+    console.error(err);
+    showStatus("Erro ao conectar. Verifique as credenciais.", "error");
+  });
+}
+
+// ===================== CRUD =====================
+async function salvarEdital(data) {
+  if (!db) { alert("Configure o Firebase primeiro."); return; }
+  try {
+    if (editando) {
+      await updateDoc(doc(db, "editais", editando), data);
+    } else {
+      await addDoc(collection(db, "editais"), { ...data, criadoEm: new Date().toISOString() });
+    }
+    fecharModal();
+  } catch(e) {
+    alert("Erro ao salvar: " + e.message);
+  }
+}
+
+async function deletarEdital(id) {
+  if (!confirm("Confirmar exclusão deste edital?")) return;
+  if (!db) return;
+  await deleteDoc(doc(db, "editais", id));
+}
+
+// ===================== RENDER =====================
+function renderStats() {
+  const hoje = new Date();
+  const ativos = editais.filter(e => {
+    if (!e.dataLimite) return true;
+    return new Date(e.dataLimite + "T23:59:59") >= hoje;
+  });
+  const urgentes = ativos.filter(e => {
+    if (!e.dataLimite) return false;
+    const diff = (new Date(e.dataLimite + "T23:59:59") - hoje) / 86400000;
+    return diff <= 15 && diff >= 0;
+  });
+  const expirados = editais.filter(e => {
+    if (!e.dataLimite) return false;
+    return new Date(e.dataLimite + "T23:59:59") < hoje;
+  });
+
+  document.getElementById("stat-total").textContent = editais.length;
+  document.getElementById("stat-ativos").textContent = ativos.length;
+  document.getElementById("stat-urgentes").textContent = urgentes.length;
+  document.getElementById("stat-expirados").textContent = expirados.length;
+}
+
+function prazoClass(dataLimite) {
+  if (!dataLimite) return "";
+  const hoje = new Date();
+  const limite = new Date(dataLimite + "T23:59:59");
+  const diff = (limite - hoje) / 86400000;
+  if (diff < 0) return "prazo-expirado";
+  if (diff <= 7) return "prazo-urgente";
+  if (diff <= 20) return "prazo-medio";
+  return "prazo-ok";
+}
+
+function prazoLabel(dataLimite) {
+  if (!dataLimite) return "—";
+  const hoje = new Date();
+  const limite = new Date(dataLimite + "T23:59:59");
+  const diff = Math.round((limite - hoje) / 86400000);
+  const fmt = new Date(dataLimite + "T12:00:00").toLocaleDateString("pt-BR");
+  if (diff < 0) return `${fmt} (expirado)`;
+  if (diff === 0) return `${fmt} (hoje!)`;
+  if (diff === 1) return `${fmt} (amanhã)`;
+  return `${fmt} (${diff}d)`;
+}
+
+function modalidadeBadge(m) {
+  if (!m) return "";
+  const map = {
+    "Subvenção": "badge-blue",
+    "Contrapartida": "badge-purple",
+    "Mista": "badge-yellow",
+    "Reembolsável": "badge-gray",
+    "Não-reembolsável": "badge-green"
+  };
+  const cls = map[m] || "badge-gray";
+  return `<span class="badge ${cls}">${m}</span>`;
+}
+
+function filterEditais() {
+  const hoje = new Date();
+  let lista = [...editais];
+
+  if (filterStatus === "ativos") {
+    lista = lista.filter(e => !e.dataLimite || new Date(e.dataLimite + "T23:59:59") >= hoje);
+  } else if (filterStatus === "urgentes") {
+    lista = lista.filter(e => {
+      if (!e.dataLimite) return false;
+      const diff = (new Date(e.dataLimite + "T23:59:59") - hoje) / 86400000;
+      return diff >= 0 && diff <= 15;
+    });
+  } else if (filterStatus === "expirados") {
+    lista = lista.filter(e => e.dataLimite && new Date(e.dataLimite + "T23:59:59") < hoje);
+  }
+
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    lista = lista.filter(e =>
+      (e.nome || "").toLowerCase().includes(q) ||
+      (e.orgao || "").toLowerCase().includes(q) ||
+      (e.linhaFomento || "").toLowerCase().includes(q) ||
+      (e.observacoes || "").toLowerCase().includes(q)
+    );
+  }
+
+  // Sort
+  lista.sort((a, b) => {
+    let va = a[sortField] || "";
+    let vb = b[sortField] || "";
+    if (sortField === "dataLimite" || sortField === "dataPublicacao") {
+      va = va || "9999-12-31";
+      vb = vb || "9999-12-31";
+    }
+    const r = va < vb ? -1 : va > vb ? 1 : 0;
+    return sortAsc ? r : -r;
+  });
+
+  return lista;
+}
+
+function renderTable() {
+  const lista = filterEditais();
+  const tbody = document.getElementById("table-body");
+
+  if (lista.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9">
+      <div class="empty-state">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <p>Nenhum edital encontrado</p>
+        <small>Clique em "+ Novo Edital" para adicionar</small>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = lista.map(e => `
+    <tr>
+      <td class="nome-cell">
+        ${e.linkEdital ? `<a class="nome-link" href="${e.linkEdital}" target="_blank" rel="noopener">↗ ${e.nome || "Sem nome"}</a>` : `<span style="font-weight:600;color:var(--text)">${e.nome || "Sem nome"}</span>`}
+        <div class="nome-orgao">${e.orgao || ""}</div>
+      </td>
+      <td><span style="font-size:12px">${e.linhaFomento || "—"}</span></td>
+      <td>${e.dataPublicacao ? new Date(e.dataPublicacao + "T12:00:00").toLocaleDateString("pt-BR") : "—"}</td>
+      <td class="${prazoClass(e.dataLimite)}">${prazoLabel(e.dataLimite)}</td>
+      <td style="font-weight:500;color:var(--text)">${e.valorProposta ? "R$ " + Number(e.valorProposta).toLocaleString("pt-BR") : "—"}</td>
+      <td style="font-size:12px">${e.prazoExecucao || "—"}</td>
+      <td>${modalidadeBadge(e.modalidade)}</td>
+      <td class="obs-cell" title="${(e.observacoes || "").replace(/"/g, '&quot;')}">${e.observacoes || "—"}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-icon" onclick="verDetalhe('${e.id}')" title="Ver detalhes">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-icon" onclick="editarEdital('${e.id}')" title="Editar">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>
+          <button class="btn btn-danger" onclick="deletarEdital('${e.id}')">✕</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+// ===================== MODAL FORM =====================
+window.abrirModalNovo = function() {
+  editando = null;
+  document.getElementById("modal-title").textContent = "Novo Edital";
+  document.getElementById("form-edital").reset();
+  abrirModal("modal-form");
+};
+
+window.editarEdital = function(id) {
+  const e = editais.find(x => x.id === id);
+  if (!e) return;
+  editando = id;
+  document.getElementById("modal-title").textContent = "Editar Edital";
+  const f = document.getElementById("form-edital");
+  f.nome.value = e.nome || "";
+  f.orgao.value = e.orgao || "";
+  f.linhaFomento.value = e.linhaFomento || "";
+  f.dataPublicacao.value = e.dataPublicacao || "";
+  f.dataLimite.value = e.dataLimite || "";
+  f.valorProposta.value = e.valorProposta || "";
+  f.prazoExecucao.value = e.prazoExecucao || "";
+  f.modalidade.value = e.modalidade || "";
+  f.linkEdital.value = e.linkEdital || "";
+  f.observacoes.value = e.observacoes || "";
+  abrirModal("modal-form");
+};
+
+window.verDetalhe = function(id) {
+  const e = editais.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById("detail-content").innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">Identificação</div>
+      <div class="detail-grid">
+        <div class="detail-item" style="grid-column:1/-1">
+          <span class="detail-key">Nome do Edital</span>
+          <span class="detail-val" style="font-size:16px">${e.nome || "—"}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-key">Órgão / Instituição</span>
+          <span class="detail-val">${e.orgao || "—"}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-key">Linha de Fomento</span>
+          <span class="detail-val">${e.linhaFomento || "—"}</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Datas e Financeiro</div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-key">Data de Publicação</span>
+          <span class="detail-val">${e.dataPublicacao ? new Date(e.dataPublicacao+"T12:00:00").toLocaleDateString("pt-BR") : "—"}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-key">Data Limite</span>
+          <span class="detail-val ${prazoClass(e.dataLimite)}">${prazoLabel(e.dataLimite)}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-key">Valor por Proposta</span>
+          <span class="detail-val">${e.valorProposta ? "R$ " + Number(e.valorProposta).toLocaleString("pt-BR") : "—"}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-key">Prazo p/ Execução</span>
+          <span class="detail-val">${e.prazoExecucao || "—"}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-key">Modalidade</span>
+          <span class="detail-val">${modalidadeBadge(e.modalidade)}</span>
+        </div>
+        ${e.linkEdital ? `<div class="detail-item">
+          <span class="detail-key">Link do Edital</span>
+          <span class="detail-val"><a href="${e.linkEdital}" target="_blank" style="color:var(--accent)">Acessar edital ↗</a></span>
+        </div>` : ""}
+      </div>
+    </div>
+    ${e.observacoes ? `<div class="detail-section">
+      <div class="detail-section-title">Observações do Time</div>
+      <div class="detail-obs">${e.observacoes.replace(/\n/g, "<br>")}</div>
+    </div>` : ""}
+  `;
+  abrirModal("modal-detail");
+};
+
+function abrirModal(id) {
+  document.getElementById(id).classList.add("open");
+}
+window.fecharModal = function(id) {
+  if (id) {
+    document.getElementById(id).classList.remove("open");
+  } else {
+    document.querySelectorAll(".overlay").forEach(o => o.classList.remove("open"));
+  }
+};
+
+// fechar ao clicar fora
+document.querySelectorAll(".overlay").forEach(o => {
+  o.addEventListener("click", (e) => { if (e.target === o) fecharModal(o.id); });
+});
+
+// ===================== FORM SUBMIT =====================
+document.getElementById("form-edital").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const data = {
+    nome: f.nome.value.trim(),
+    orgao: f.orgao.value.trim(),
+    linhaFomento: f.linhaFomento.value.trim(),
+    dataPublicacao: f.dataPublicacao.value,
+    dataLimite: f.dataLimite.value,
+    valorProposta: f.valorProposta.value ? parseFloat(f.valorProposta.value.replace(/\./g,"").replace(",",".")) : "",
+    prazoExecucao: f.prazoExecucao.value.trim(),
+    modalidade: f.modalidade.value,
+    linkEdital: f.linkEdital.value.trim(),
+    observacoes: f.observacoes.value.trim(),
+    atualizadoEm: new Date().toISOString()
+  };
+  await salvarEdital(data);
+});
+
+// ===================== SORT =====================
+window.sortBy = function(field) {
+  if (sortField === field) { sortAsc = !sortAsc; }
+  else { sortField = field; sortAsc = true; }
+  document.querySelectorAll("th[data-sort]").forEach(th => {
+    th.classList.remove("sorted");
+    th.querySelector(".sort-icon").textContent = "↕";
+  });
+  const th = document.querySelector(`th[data-sort="${field}"]`);
+  if (th) {
+    th.classList.add("sorted");
+    th.querySelector(".sort-icon").textContent = sortAsc ? "↑" : "↓";
+  }
+  renderTable();
+};
+
+// ===================== SEARCH / FILTER =====================
+document.getElementById("search").addEventListener("input", (e) => {
+  searchTerm = e.target.value;
+  renderTable();
+});
+document.getElementById("filter-status").addEventListener("change", (e) => {
+  filterStatus = e.target.value;
+  renderTable();
+});
+
+// ===================== CONFIG =====================
+window.abrirConfig = function() {
+  const cfg = getConfig();
+  const f = document.getElementById("form-config");
+  f.apiKey.value = cfg.apiKey || "";
+  f.authDomain.value = cfg.authDomain || "";
+  f.projectId.value = cfg.projectId || "";
+  f.storageBucket.value = cfg.storageBucket || "";
+  f.messagingSenderId.value = cfg.messagingSenderId || "";
+  f.appId.value = cfg.appId || "";
+  abrirModal("modal-config");
+};
+
+document.getElementById("form-config").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const cfg = {
+    apiKey: f.apiKey.value.trim(),
+    authDomain: f.authDomain.value.trim(),
+    projectId: f.projectId.value.trim(),
+    storageBucket: f.storageBucket.value.trim(),
+    messagingSenderId: f.messagingSenderId.value.trim(),
+    appId: f.appId.value.trim()
+  };
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+  const ok = initFirebase(cfg);
+  if (ok) {
+    showStatus("Firebase conectado com sucesso!", "success");
+    fecharModal("modal-config");
+  } else {
+    showStatus("Erro na configuração. Verifique as credenciais.", "error");
+  }
+});
+
+function showStatus(msg, type) {
+  const el = document.getElementById("status-bar");
+  el.textContent = msg;
+  el.className = "alert " + (type === "success" ? "alert-success" : "alert-warn");
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 4000);
+}
+
+// ===================== BOOT =====================
+function boot() {
+  const cfg = getConfig();
+  const isConfigured = cfg.apiKey && cfg.projectId;
+  document.getElementById("config-hint").style.display = isConfigured ? "none" : "block";
+  if (isConfigured) {
+    initFirebase(cfg);
+  } else {
+    document.getElementById("table-body").innerHTML = `<tr><td colspan="9">
+      <div class="empty-state">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <p>Configure o Firebase para começar</p>
+        <small>Clique em "⚙ Configurar Firebase" no topo</small>
+      </div>
+    </td></tr>`;
+  }
+}
+
+boot();
+</script>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">
+    <span>Painel de Editais</span>
+    <span class="logo-badge">NIPS</span>
+  </div>
+  <div class="header-actions">
+    <div id="status-bar" class="alert" style="display:none;margin:0;padding:6px 12px;font-size:12px"></div>
+    <button class="btn btn-ghost" onclick="abrirConfig()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Firebase
+    </button>
+    <button class="btn btn-primary" onclick="abrirModalNovo()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Novo Edital
+    </button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- CONFIG HINT -->
+  <div id="config-hint" class="alert alert-info" style="margin-bottom:20px;display:none">
+    ⚡ <strong>Primeiro acesso:</strong> clique em "Firebase" no topo para configurar seu banco de dados gratuito.
+    Sem isso, os dados não serão salvos. Veja as instruções no modal de configuração.
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-card accent">
+      <div class="stat-label">Total de Editais</div>
+      <div class="stat-value" id="stat-total">0</div>
+    </div>
+    <div class="stat-card success">
+      <div class="stat-label">Abertos / Ativos</div>
+      <div class="stat-value" id="stat-ativos">0</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-label">Vencendo em 15d</div>
+      <div class="stat-value" id="stat-urgentes">0</div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-label">Expirados</div>
+      <div class="stat-value" id="stat-expirados">0</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input class="search-input" id="search" type="text" placeholder="Buscar por nome, órgão, linha...">
+    </div>
+    <select class="filter-select" id="filter-status">
+      <option value="todos">Todos</option>
+      <option value="ativos">Ativos</option>
+      <option value="urgentes">Urgentes (≤15d)</option>
+      <option value="expirados">Expirados</option>
+    </select>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="nome" onclick="sortBy('nome')">Edital / Órgão <span class="sort-icon">↕</span></th>
+            <th data-sort="linhaFomento" onclick="sortBy('linhaFomento')">Linha / Área <span class="sort-icon">↕</span></th>
+            <th data-sort="dataPublicacao" onclick="sortBy('dataPublicacao')">Publicação <span class="sort-icon">↕</span></th>
+            <th data-sort="dataLimite" class="sorted" onclick="sortBy('dataLimite')">Data Limite <span class="sort-icon">↑</span></th>
+            <th data-sort="valorProposta" onclick="sortBy('valorProposta')">Valor/Proposta <span class="sort-icon">↕</span></th>
+            <th data-sort="prazoExecucao" onclick="sortBy('prazoExecucao')">Prazo Exec. <span class="sort-icon">↕</span></th>
+            <th data-sort="modalidade" onclick="sortBy('modalidade')">Modalidade <span class="sort-icon">↕</span></th>
+            <th>Observações</th>
+            <th style="width:100px">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="9"><div class="loading"><div class="spinner"></div>Carregando...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- ===== MODAL FORM ===== -->
+<div class="overlay" id="modal-form">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title">Novo Edital</h2>
+      <button class="modal-close" onclick="fecharModal('modal-form')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="form-edital">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nome do Edital *</label>
+          <input name="nome" required placeholder="Ex: Chamada EMBRAPII — Bioinsumos 2024">
+        </div>
+        <div class="form-group">
+          <label>Órgão / Instituição</label>
+          <input name="orgao" placeholder="Ex: FINEP, SEBRAE, CNPq...">
+        </div>
+        <div class="form-group">
+          <label>Linha de Fomento / Área</label>
+          <input name="linhaFomento" placeholder="Ex: Inovação Agroindustrial">
+        </div>
+        <div class="form-group">
+          <label>Data de Publicação</label>
+          <input name="dataPublicacao" type="date">
+        </div>
+        <div class="form-group">
+          <label>Data Limite</label>
+          <input name="dataLimite" type="date">
+        </div>
+        <div class="form-group">
+          <label>Valor por Proposta (R$)</label>
+          <input name="valorProposta" type="number" placeholder="Ex: 500000">
+        </div>
+        <div class="form-group">
+          <label>Prazo p/ Execução</label>
+          <input name="prazoExecucao" placeholder="Ex: 24 meses">
+        </div>
+        <div class="form-group">
+          <label>Modalidade</label>
+          <select name="modalidade">
+            <option value="">Selecione...</option>
+            <option>Subvenção</option>
+            <option>Não-reembolsável</option>
+            <option>Contrapartida</option>
+            <option>Mista</option>
+            <option>Reembolsável</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Link do Edital</label>
+          <input name="linkEdital" type="url" placeholder="https://...">
+        </div>
+        <div class="form-group full">
+          <label>Observações do Time</label>
+          <textarea name="observacoes" placeholder="Anotações internas, estratégias, responsáveis, status de análise..."></textarea>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-ghost" onclick="fecharModal('modal-form')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar Edital</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL DETAIL ===== -->
+<div class="overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Detalhes do Edital</h2>
+      <button class="modal-close" onclick="fecharModal('modal-detail')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL CONFIG ===== -->
+<div class="overlay" id="modal-config">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">⚙ Configurar Firebase</h2>
+      <button class="modal-close" onclick="fecharModal('modal-config')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="config-section">
+      <div class="config-title">Como configurar em 5 minutos</div>
+      <div class="config-desc">
+        1. Acesse <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> e crie um projeto gratuito.<br>
+        2. Vá em <strong>Firestore Database → Criar banco de dados</strong> (modo de teste).<br>
+        3. Vá em <strong>Configurações do Projeto → Seus aplicativos → Web → Adicionar app</strong>.<br>
+        4. Copie as credenciais do <code>firebaseConfig</code> e cole abaixo.<br>
+        5. No Firestore, vá em <strong>Regras</strong> e aplique: <code>allow read, write: if true;</code> (para uso interno).
+      </div>
+      <div class="alert alert-warn">⚠ As regras de leitura/escrita abertas são adequadas para uso interno do time. Para uso externo, configure autenticação.</div>
+    </div>
+    <form id="form-config">
+      <div class="config-grid">
+        <div class="form-group">
+          <label>API Key</label>
+          <input name="apiKey" placeholder="AIza..." required>
+        </div>
+        <div class="form-group">
+          <label>Auth Domain</label>
+          <input name="authDomain" placeholder="projeto.firebaseapp.com" required>
+        </div>
+        <div class="form-group">
+          <label>Project ID</label>
+          <input name="projectId" placeholder="meu-projeto" required>
+        </div>
+        <div class="form-group">
+          <label>Storage Bucket</label>
+          <input name="storageBucket" placeholder="projeto.appspot.com">
+        </div>
+        <div class="form-group">
+          <label>Messaging Sender ID</label>
+          <input name="messagingSenderId" placeholder="123456789">
+        </div>
+        <div class="form-group">
+          <label>App ID</label>
+          <input name="appId" placeholder="1:xxx:web:xxx">
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-ghost" onclick="fecharModal('modal-config')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Conectar Firebase</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
